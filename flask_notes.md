@@ -1,4 +1,4 @@
-#Flask
+# Flask
 
 Flask is a web micro-framework. It provides you with the minimal tools and libraries to build a web application in Python. It is a micro-framework because it only has 2 dependencies
 
@@ -21,13 +21,13 @@ Flask is a web micro-framework. It provides you with the minimal tools and libra
 * `abort(<code>)`: Send error `code` to client.
 * `redirect(<url>)`: Redirects `@app.route(<route>)` to redirect <url>. The `code` argument allows specification of redirect code, e.g., `..., code=301)` indicates the redirect is *permanent* as opposed to a temporary resource absence. `code` defaults to `302` (i.e., temporary redirect).
 
-###App Attributes & Methods
+### App Attributes & Methods
 
 App objects are created for each Flask app with `App = Flask(__name__)`. 
 
 * `run(<host>,<port>)`: Start the Flask app server from `<host>` through `<port>`. Until the process is ended, the Flask app will wait for calls from clients. This is not a robust web server, it is for **testing only**
 
-###Request Methods
+### Request Methods
 
 * `request.args`: the key/value pairs in the URL query string
 * `request.form`: the key/value pairs in the body, from a HTML post form, or JavaScript request that isn't JSON encoded
@@ -35,7 +35,7 @@ App objects are created for each Flask app with `App = Flask(__name__)`.
 * `request.remote_addr`: return the IP address of the client
 * `request.values`: combined args and form, preferring args if keys overlap
 
-###Render Methods
+### Render Methods
 
 * `render_template('path/under/template/file.html', [arg_1 = <val1>, ...])`: Render `.html` file inside the `template` directory (default directory name may be changed). Allows `arg_.` to be used in Jinja `{{ arg_. }}` variables. For example: 
 
@@ -48,7 +48,7 @@ return render_template('author.html',
 
 * `render_template_string(<html_str>, [arg_1 = <val1>, ...])`: Render HTML code with the ability to insert argument values into the string without Python string manipulation. For example:
 
-###Decorators
+### Decorators
 
 * `@app.errorhandler(<code>)`: Specifies the following method for the event when the server sends error `code` to the client. This allows override of default Flask error templates. For example, 
     ```python
