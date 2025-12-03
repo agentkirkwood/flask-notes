@@ -46,6 +46,8 @@ return render_template('author.html',
                    author_ln='Frank Herbert') #Used in {{ author_ln }} in HTML
 ```
 
+**Note:** Flask automatically looks for templates in a `templates/` directory relative to your app file. You don't need to specify `templates/` in the path. To customize this location, use `app = Flask(__name__, template_folder='custom_folder')`.
+
 * `render_template_string(<html_str>, [arg_1 = <val1>, ...])`: Render HTML code with the ability to insert argument values into the string without Python string manipulation. For example:
 
 ### Decorators
@@ -129,6 +131,10 @@ def hello_world():
 
 ## File Input in Flask
 
-*“never trust user input”*
+*"never trust user input"*
 
 * [Guide Here](http://flask.pocoo.org/docs/0.12/patterns/fileuploads/)
+
+## References
+
+* [Flask Tutorial Step by Step - Udemy Course](https://www.udemy.com/course/draft/1114060)
