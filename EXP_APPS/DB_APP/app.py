@@ -24,8 +24,8 @@ def connect_db():
 @app.route('/')
 def hello_world():
     db_connection = connect_db()
-    cursor = db_connection.execute('SELECT id, name FROM author;')
-    authors = [dict(id=row[0], name=row[1]) for row in cursor.fetchall()]
+    cursor = db_connection.execute('SELECT id, name, country_id FROM author;')
+    authors = [dict(id=row[0], name=row[1], country_id=row[2]) for row in cursor.fetchall()]
     return render_template('authors.html', authors=authors)
 
 if __name__ == '__main__':

@@ -96,16 +96,17 @@ Other template styles may be specified, but Jinja is the default style.
 </ul>
 ...
 ```
-* **If-Else Conditionals**: Renders HTML based on a conditional switch. Conditionals come between `%`s and are finished with `endif`. The following adds bold (`<b>` tag) to `'name'` of `author` if it has an `'id'` ≤ 2.
+* **If-Else Conditionals**: Renders HTML based on a conditional switch. Conditionals come between `%`s and are finished with `endif`. The following adds bold (`<b>` tag) to `'name'` of `author` if it has `country_id == 2`.
 ```html
 <ul>
-    {% if author['id'] > 2 %}
+    {% if author['country_id']== 2 %}
         <li>{{author['id']}}: {{author['name']}}</li>
     {% else %}
         <li><b>{{author['id']}}: {{author['name']}}</b></li>
     {% endif %}
 </ul>
 ```
+* **Joins
 
 ## Databases in Flask
 
