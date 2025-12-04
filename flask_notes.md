@@ -15,6 +15,9 @@ Flask is a web micro-framework. It provides you with the minimal tools and libra
     * [Error Handler](#error-handler)
     * [Route Decorator](#route-decorator)
         * [Dynamic Routes](#dynamic-routes)
+    * [Before-Request Decorator](#before-request-decorator)
+    * [After-Request Decorator](#after-request-decorator)
+    * [Teardown-Request Decorator](#teardown-request-decorator)
 * [URLs Quick and Dirty](#urls-quick-and-dirty)
 * [Jinja Template Syntax](#jinja-template-syntax)
 * [Databases in Flask](#databases-in-flask)
@@ -99,6 +102,67 @@ def author(authors_last_name): #passed from the url above
 ```
 
 This will fill in references to `{{ author_ln }}` Jinja variable in the `.html` template file with the author's last name. **Data Types**: Dynamic route values' **data types** may be specified preceding the value name. E.g., `@app.route('/people/<int:age>')`.
+
+### Before-Request Decorator
+
+`@app.before_request`: Runs a function **before every request** is processed. Useful for setting up resources that need to be available during the request lifecycle, such as database connections or user authentication checks.
+
+```python
+from flask import g #for global
+
+@app.before_request
+def before_request():
+    g.db = connect_db()  # Creates new connection for this request
+```
+
+**Key points:**
+- Executes once per request, not just once at startup
+- The `g` object is request-specific - it's created fresh for each request and destroyed when the request ends
+- Allows helper functions to access `g.db` without passing it as a parameter
+- Most useful when you have multiple routes and helper functions that need shared resources
+
+### After-Request Decorator
+
+`@app.after_request`: Runs a function **after every request** has been processed, but before the response is sent to the client. **The function must accept the response object and return it** (possibly modified).
+
+```python
+@app.after_request
+def after_request(response):
+    response.headers['X-Custom-Header'] = 'My Value'
+    # Log response status
+    print(f"Response status: {response.status_code}")
+    return response  # Must return the response
+```
+
+**Common uses:**
+- Adding custom headers to all responses
+- Logging response information
+- Modifying response data
+- Setting CORS headers
+
+### Teardown-Request Decorator
+
+`@app.teardown_request`: Runs at the **end of every request**, even if an exception occurred during request processing. The function receives an exception parameter (which is `None` if no exception occurred). Does not receive or return the response object.
+
+```python
+@app.teardown_request
+def teardown_request(exception):
+    db = getattr(g, 'db', None)
+    if db is not None:
+        db.close()  # Ensures connection is always closed
+    if exception:
+        print(f"Request failed with error: {exception}")
+```
+
+**Common uses:**
+- Cleanup operations (closing database connections, file handles)
+- Resource deallocation
+- Error logging
+- Guaranteed execution regardless of success or failure
+
+**Key difference from `@app.after_request`:**
+- `after_request` only runs if request succeeds; `teardown_request` always runs
+- `after_request` can modify the response; `teardown_request` cannot
 
 ## URLs Quick and Dirty
 
