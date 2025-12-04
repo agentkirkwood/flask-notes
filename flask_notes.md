@@ -11,10 +11,15 @@ Flask is a web micro-framework. It provides you with the minimal tools and libra
     * [App Attributes & Methods](#app-attributes-methods)
     * [Request Methods](#request-methods)
     * [Render Methods](#render-methods)
-    * [Decorators](#decorators)
+* [Decorators](#decorators)
+    * [Error Handler](#error-handler)
+    * [Route Decorator](#route-decorator)
+        * [Dynamic Routes](#dynamic-routes)
 * [URLs Quick and Dirty](#urls-quick-and-dirty)
 * [Jinja Template Syntax](#jinja-template-syntax)
 * [Databases in Flask](#databases-in-flask)
+* [File Input in Flask](#file-input-in-flask)
+* [References](#references)
 
 ## Flask Methods
 
@@ -50,16 +55,21 @@ return render_template('author.html',
 
 * `render_template_string(<html_str>, [arg_1 = <val1>, ...])`: Render HTML code with the ability to insert argument values into the string without Python string manipulation. For example:
 
-### Decorators
+## Decorators
 
-* `@app.errorhandler(<code>)`: Specifies the following method for the event when the server sends error `code` to the client. This allows override of default Flask error templates. For example, 
-    ```python
-    @app.errorhandler(<code>)
-    def not_found(error):
-        return render_template('404.html'), 404
-    ```
+### Error Handler
+
+`@app.errorhandler(<code>)`: Specifies the following method for the event when the server sends error `code` to the client. This allows override of default Flask error templates. For example:
+```python
+@app.errorhandler(<code>)
+def not_found(error):
+    return render_template('404.html'), 404
+```
 Note that by default, flask methods return a `200` code, (i.e., 'okay'). To specify otherwise, return the correct code as the second element of a tuple (e.g., as above).
-* **Route Decorator**: `@app.route('/route/to/site')` Specifies the directory `/route/to/site`, which will run the following (single) function/method when accessed by a client.
+
+### Route Decorator
+
+`@app.route('/route/to/site')` Specifies the directory `/route/to/site`, which will run the following (single) function/method when accessed by a client.
 ```python
 @app.route('/')
 def hello_world():
@@ -67,22 +77,28 @@ def hello_world():
     data = process_data()          # another helper function
     return render_template('index.html', data=data)
 ```
+
 Multiple routes can use the same function:
+
 ```python
 @app.route('/')
 @app.route('/home')
 def index():
     return "Home page"
 ```
-* **Dynamic Routes**: Generated with `<` and `>`. For example
+
+#### Dynamic Routes 
+
+A dynamic route is an implicitly defined route that can be generated from input data. The imputed route is denoted by a variable within `<` and `>`. For example:
+
 ```python
 @app.route('/authors/<authors_last_name>')
 def author(authors_last_name): #passed from the url above
     return render_template('author.html',
                         author_ln=authors_last_name)
 ```
-This will fill in the `{{ author_ln }}` Jinja variable in the `.html` file with the author's last name.
-* **Data Types**: Dynamic route values' data types may be specified preceding the value name. E.g., `@app.route('/people/<int:age>')`.
+
+This will fill in references to `{{ author_ln }}` Jinja variable in the `.html` template file with the author's last name. **Data Types**: Dynamic route values' **data types** may be specified preceding the value name. E.g., `@app.route('/people/<int:age>')`.
 
 ## URLs Quick and Dirty
 
