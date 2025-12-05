@@ -58,6 +58,13 @@ return render_template('author.html',
 
 * `render_template_string(<html_str>, [arg_1 = <val1>, ...])`: Render HTML code with the ability to insert argument values into the string without Python string manipulation. For example:
 
+```python
+@app.route('/greet/<name>')
+def greet(name):
+    html = '<h1>Hello, {{ username }}!</h1><p>Welcome to our site.</p>'
+    return render_template_string(html, username=name)
+```
+
 ## Decorators
 
 ### Error Handler
