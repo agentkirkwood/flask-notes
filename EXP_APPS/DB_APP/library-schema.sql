@@ -2,7 +2,7 @@
 
 drop table if exists country;
 create table country (
-  id integer primary key autoincrement,
+  id integer primary key autoincrement, --INSERT-ed countrys will get an auto-incremented id
   name text not null
 );
 
