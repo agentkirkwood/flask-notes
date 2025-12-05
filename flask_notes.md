@@ -9,7 +9,7 @@ Flask is a web micro-framework. It provides you with the minimal tools and libra
 
 * [Flask Methods](#flask-methods)
     * [App Attributes & Methods](#app-attributes-methods)
-    * [Request Methods](#request-methods)
+    * [The `request` Object](#the-request-object)
     * [Render Methods](#render-methods)
 * [Decorators](#decorators)
     * [Error Handler](#error-handler)
@@ -35,13 +35,26 @@ App objects are created for each Flask app with `App = Flask(__name__)`.
 
 * `run(<host>,<port>)`: Start the Flask app server from `<host>` through `<port>`. Until the process is ended, the Flask app will wait for calls from clients. This is not a robust web server, it is for **testing only**
 
-### Request Methods
+### The `request` Object
 
-* `request.args`: the key/value pairs in the URL query string
-* `request.form`: the key/value pairs in the body, from a HTML post form, or JavaScript request that isn't JSON encoded
-* `request.files`: the files in the body, which Flask keeps separate from form. HTML forms must use `enctype=multipart/form-data` or files will not be uploaded.
-* `request.remote_addr`: return the IP address of the client
-* `request.values`: combined args and form, preferring args if keys overlap
+The `request` object contains all data from the incoming HTTP request sent by the client. It's automatically available in route functions after importing: `from flask import request`. Use it to access URL parameters, form data, uploaded files, headers, cookies, and request metadata.
+
+**Request Data:**
+
+* `request.args`: Key/value pairs from the URL query string. Example: `/search?q=python` → `request.args.get('q')` returns `'python'`
+* `request.form`: Key/value pairs from HTML form submissions (POST requests) or non-JSON JavaScript requests. Access with `request.form['field_name']` or `request.form.get('field_name')`
+* `request.json`: Parsed JSON data from API requests. Returns a Python dictionary. Example: `data = request.json; name = data['name']`
+* `request.files`: Uploaded files from form submissions. HTML forms must use `enctype=multipart/form-data"`. Access with `request.files['field_name']`
+* `request.values`: Combined `args` and `form` data, with `args` taking precedence if keys overlap
+
+**Request Metadata:**
+
+* `request.method`: The HTTP method used (`'GET'`, `'POST'`, `'PUT'`, `'DELETE'`, etc.)
+* `request.path`: The path portion of the URL (e.g., `'/users/profile'`)
+* `request.url`: The complete URL including protocol, host, and query string
+* `request.remote_addr`: The IP address of the client making the request
+* `request.headers`: HTTP headers sent by the client (e.g., `request.headers.get('User-Agent')`)
+* `request.cookies`: Cookies sent by the client (e.g., `request.cookies.get('session_id')`)
 
 ### Render Methods
 
