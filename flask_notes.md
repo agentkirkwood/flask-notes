@@ -45,6 +45,8 @@ App objects are created for each Flask app with `App = Flask(__name__)`.
 
 ### Render Methods
 
+Render methods are used to generate HTML responses for Flask routes. They combine HTML templates with dynamic data, allowing you to insert Python variables into HTML using Jinja template syntax.
+
 * `render_template('path/under/template/file.html', [arg_1 = <val1>, ...])`: Render `.html` file inside the `template` directory (default directory name may be changed). Allows `arg_.` to be used in Jinja `{{ arg_. }}` variables. For example: 
 
 ```python
@@ -63,6 +65,49 @@ return render_template('author.html',
 def greet(name):
     html = '<h1>Hello, {{ username }}!</h1><p>Welcome to our site.</p>'
     return render_template_string(html, username=name)
+```
+
+* `jsonify(<dict>)`: Returns a JSON response with the proper `application/json` content type. Commonly used for building REST APIs.
+
+```python
+from flask import jsonify
+
+@app.route('/api/data')
+def get_data():
+    return jsonify({'name': 'John', 'age': 30, 'city': 'New York'})
+```
+
+* `make_response(<body>, [status_code])`: Creates a response object that can be customized with headers, cookies, and status codes before being returned.
+
+```python
+from flask import make_response
+
+@app.route('/custom')
+def custom():
+    response = make_response('Custom response', 200)
+    response.headers['X-Custom-Header'] = 'Value'
+    response.set_cookie('username', 'John')
+    return response
+```
+
+* `send_file(<path>, [as_attachment=True])`: Sends a file to the client. Useful for serving downloads, images, PDFs, or other file types.
+
+```python
+from flask import send_file
+
+@app.route('/download')
+def download():
+    return send_file('files/document.pdf', as_attachment=True)
+```
+
+* `send_from_directory(<directory>, <filename>)`: Safely serves files from a specific directory. Automatically handles security concerns like path traversal attacks.
+
+```python
+from flask import send_from_directory
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory('uploads', filename)
 ```
 
 ## Decorators
