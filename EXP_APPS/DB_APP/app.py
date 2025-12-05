@@ -77,6 +77,22 @@ def hello_world():
     authors = [dict(id=row[0], name=row[1], country=row[2]) for row in cursor.fetchall()]
     return render_template('authors_with_form.html', authors=authors)
 
+@app.route('/delete/<int:author_id>', methods=['POST'])
+def delete_author(author_id):
+    # Get author name for flash message before deleting
+    cursor = g.db.execute('SELECT name FROM author WHERE id = ?', (author_id,))
+    author = cursor.fetchone()
+    
+    if author:
+        author_name = author[0]
+        g.db.execute('DELETE FROM author WHERE id = ?', (author_id,))
+        g.db.commit()
+        flash(f'Author "{author_name}" deleted successfully.', 'success')
+    else:
+        flash('Author not found.', 'error')
+    
+    return redirect(url_for('hello_world'))
+
 if __name__ == '__main__':
 	app.debug = True
 	host = os.environ.get('IP', '0.0.0.0')
