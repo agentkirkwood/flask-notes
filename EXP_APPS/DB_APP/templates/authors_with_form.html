@@ -23,27 +23,38 @@
         
         <div class="row">
             <div class="col-md-12">
-                <h1>This is <em>a</em> list of authors (American authors in <b>bold</b>):</h1>
-                <ul class="list-group">
-                    {% for author in authors %}
-                        <li class="list-group-item">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <span>
-                                    {% if author['country']=='United States' %}
-                                        <b>{{author['name']}} (from {{author['country']}})</b>
-                                    {% else %}  
-                                        {{author['name']}} (from {{author['country']}})
-                                    {% endif %}
-                                </span>
-                                <form method="POST" action="{{ url_for('delete_author', author_id=author['id']) }}" style="display: inline;">
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete {{author['name']}}?');">
-                                        Delete
-                                    </button>
-                                </form>
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
+                <h1>Authors List <small>(American authors in <b>bold</b>)</small></h1>
+                <p>Click column headers to sort</p>
+                <table class="table table-striped table-hover" id="authorsTable">
+                    <thead>
+                        <tr>
+                            <th style="cursor: pointer;" onclick="sortTable(0)">
+                                Author 
+                                <span class="glyphicon glyphicon-sort"></span>
+                            </th>
+                            <th style="cursor: pointer;" onclick="sortTable(1)">
+                                Country 
+                                <span class="glyphicon glyphicon-sort"></span>
+                            </th>
+                            <th style="width: 100px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for author in authors %}
+                            <tr {% if author['country']=='United States' %}style="font-weight: bold;"{% endif %}>
+                                <td>{{author['name']}}</td>
+                                <td>{{author['country']}}</td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('delete_author', author_id=author['id']) }}" style="display: inline;">
+                                        <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete {{author['name']}}?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
         <div class="row">
@@ -66,5 +77,48 @@
             </div>
         </div>
     </div>
+    
+    <script>
+        function sortTable(columnIndex) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("authorsTable");
+            switching = true;
+            dir = "asc"; // Set the sorting direction to ascending
+            
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[columnIndex];
+                    y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+                    
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+    </script>
 </body>
 </html>
