@@ -3,7 +3,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Authors List</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.css') }}">
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.css">
 </head>
 <body>
     <div class="container">
@@ -46,7 +46,7 @@
                                 <td>{{author['country']}}</td>
                                 <td>
                                     <form method="POST" action="{{ url_for('delete_author', author_id=author['id']) }}" style="display: inline;">
-                                        <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Are you sure you want to delete {{author['name']}}?');">
+                                        <button type="submit" class="btn btn-danger btn-xs" data-author-name="{{ author['name'] }}" onclick="return confirmDelete(this);">
                                             Delete
                                         </button>
                                     </form>
@@ -119,6 +119,15 @@
                 }
             }
         }
+        
+        function confirmDelete(button) {
+            const authorName = button.getAttribute('data-author-name');
+            return confirm('Are you sure you want to delete ' + authorName + '?');
+        }
     </script>
+    
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
 </body>
 </html>

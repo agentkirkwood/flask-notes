@@ -7,13 +7,19 @@ building an HTML template with it.
 Requirements:
  * A database created with some data about authors inside.
 """
-from flask import Flask, g, render_template, request, flash, redirect, url_for
+from flask import Flask, g, render_template, request, flash, redirect, url_for, send_from_directory
 import config  # type: ignore
 import os
 import sqlite3
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here-change-in-production'  # Required for flash messages
+
+# Add route to serve Bootstrap files from shared directory
+@app.route('/bootstrap/<path:filename>')
+def bootstrap_static(filename):
+    bootstrap_dir = os.path.join(os.path.dirname(__file__), '..', 'bootstrap')
+    return send_from_directory(bootstrap_dir, filename)
 
 def connect_db():
     return sqlite3.connect(config.DATABASE_NAME)
