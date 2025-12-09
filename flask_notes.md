@@ -354,9 +354,9 @@ def bootstrap_static(filename):
 | Publicly accessible | Can be access-controlled |
 | Cached by browser | Generated per request |
 
-### Jinja Template Syntax
+### Jinja Templates
 
-Other template styles may be specified, but Jinja is the default style.
+Jinja2 is Flask's built-in templating engine and the standard for Flask applications. The following are some basic syntactical structures for use in Jinja templates.
 
 * **Variables - `{{ <var> }}`**: A placeholder for template building
 * **For-Loop**: Render HTML with a for-loop iteration over an input variable defined within the `app()`. `authors
@@ -376,6 +376,85 @@ Other template styles may be specified, but Jinja is the default style.
         <li><b>{{author['id']}}: {{author['name']}}</b></li>
     {% endif %}
 </ul>
+```
+
+**Template Inheritance:**
+
+Template inheritance is a powerful Jinja2 feature that allows you to build a base "skeleton" template containing common elements (navigation, footer, CSS/JS includes) and define blocks that child templates can override. This follows the DRY (Don't Repeat Yourself) principle.
+
+**Base Template** (`base.html`):
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Default Title{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </nav>
+    
+    <main>
+        {% block content %}
+        <!-- Child templates will replace this -->
+        {% endblock %}
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 My Website</p>
+    </footer>
+</body>
+</html>
+```
+
+**Child Template** (`page.html`):
+```html
+{% extends "base.html" %}
+
+{% block title %}My Page Title{% endblock %}
+
+{% block content %}
+    <h1>Welcome to My Page</h1>
+    <p>This content replaces the content block in base.html</p>
+{% endblock %}
+```
+
+**Key Directives:**
+
+* `{% extends "base.html" %}` - Must be first line in child template. Specifies which base template to inherit from
+* `{% block name %}...{% endblock %}` - Defines a replaceable section. Base template defines blocks, child templates override them
+* `{{ super() }}` - Include parent block's content alongside child content
+
+**Example with `super()`:**
+```html
+{# base.html #}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+{% endblock %}
+
+{# child.html #}
+{% block scripts %}
+    {{ super() }}  <!-- Includes common.js from parent -->
+    <script src="{{ url_for('static', filename='js/page-specific.js') }}"></script>
+{% endblock %}
+```
+
+**Benefits:**
+* **Consistency**: All pages share same structure (navbar, footer, styles)
+* **DRY Principle**: Write common HTML once, reuse across all pages
+* **Easy Maintenance**: Update navigation in one place, affects all pages
+* **Flexibility**: Different pages can override different blocks as needed
+
+**Multi-Level Inheritance:**
+You can chain inheritance multiple levels deep:
+```
+base.html (site-wide template)
+    └─→ section_base.html (specific section layout)
+            └─→ page.html (individual page)
 ```
 
 ### AJAX with Flask
