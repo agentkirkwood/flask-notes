@@ -5,6 +5,15 @@ Flask is a web micro-framework. It provides you with the minimal tools and libra
 * [Werkseug](https://werkzeug.palletsprojects.com/en/stable/) - a [WSGI](https://wsgi.readthedocs.io/en/latest/) (Web Server Gateway Interface) utility library for interface between web servers and web applications for the Python programming language.
 * [Jinja2](https://jinja.palletsprojects.com/en/stable/) - a template engine for Python
 
+## Why Flask?
+
+Flask offers several advantages that make it an excellent choice for web development:
+
+* **Simple to start** - Get a basic web app running in just a few lines of code
+* **Easy to understand** - Minimal abstractions and straightforward API make learning intuitive
+* **Well-documented** - Comprehensive [official documentation](https://flask.palletsprojects.com/) with clear examples and best practices
+* **Great for self-contained projects** - Perfect for small to medium applications, APIs, and prototypes without unnecessary overhead
+
 ## Contents
 
 * [Flask Methods](#flask-methods)
@@ -34,7 +43,7 @@ Flask is a web micro-framework. It provides you with the minimal tools and libra
   * [Appendix C: HTML & CSS Fundamentals](#appendix-c-html--css-fundamentals)
   * [Appendix D: Hosting Flask Apps on the Web](#appendix-d-hosting-flask-apps-on-the-web)
 
-## Flask Methods
+## Flask Methods & Variables
 
 * `abort(<code>)`: Send error `code` to client.
 * `redirect(<url>)`: Redirects `@app.route(<route>)` to redirect <url>. The `code` argument allows specification of redirect code, e.g., `..., code=301)` indicates the redirect is *permanent* as opposed to a temporary resource absence. `code` defaults to `302` (i.e., temporary redirect).
@@ -43,7 +52,101 @@ Flask is a web micro-framework. It provides you with the minimal tools and libra
 
 App objects are created for each Flask app with `App = Flask(__name__)`. 
 
-* `run(<host>,<port>)`: Start the Flask app server from `<host>` through `<port>`. Until the process is ended, the Flask app will wait for calls from clients. This is not a robust web server, it is for **testing only**
+**App Creation:**
+
+```python
+app = Flask(__name__)  # Basic app
+
+# With custom folders
+app = Flask(__name__, 
+            template_folder='my_templates',
+            static_folder='my_static',
+            static_url_path='/assets')
+```
+
+**Key Attributes:**
+
+* `app.config`: Configuration dictionary for app settings. Access with `app.config['KEY']` or `app.config.get('KEY')`
+* `app.logger`: Python logger for the application. Use for logging: `app.logger.debug()`, `app.logger.info()`, `app.logger.error()`
+* `app.debug`: Boolean indicating debug mode status
+* `app.name`: The name of the application (usually the module name)
+* `app.root_path`: Absolute path to the application package/module
+* `app.static_folder`: Path to static files directory
+* `app.template_folder`: Path to templates directory
+
+**Common Methods:**
+
+* `run(<host>, <port>, <debug>, <threaded>)`: Start the Flask app server. Until the process is ended, the Flask app will wait for calls from clients. This is not a robust web server, it is for **testing only**.
+
+  **Parameters:**
+  * `host` - The hostname or IP address to bind to:
+    * `'127.0.0.1'` (default) - Only accessible from your local machine
+    * `'0.0.0.0'` - Accessible from any device on the network (required for deployment)
+  * `port` - Which port to run the app on (default: `5000`)
+  * `debug` - Enables detailed error messages and auto-reload when code changes:
+    * `True` - Shows errors in browser, restarts automatically (development only)
+    * `False` (default) - **Must be False in production** for security
+  * `threaded` - Allows handling multiple requests simultaneously (default: `False`, recommended: `True` for production)
+
+  **Example:**
+  ```python
+  if __name__ == '__main__':
+      app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
+  ```
+
+* `add_url_rule(rule, endpoint, view_func, **options)`: Manually register a URL route without using the `@app.route()` decorator. Useful for programmatic route registration or when using class-based views.
+
+  ```python
+  def index():
+      return 'Home page'
+  
+  app.add_url_rule('/', 'index', index, methods=['GET'])
+  ```
+
+* `register_blueprint(blueprint, **options)`: Register a Blueprint with the application. Blueprints are used to organize related routes and functionality into modular components.
+
+  ```python
+  from flask import Blueprint
+  
+  api_bp = Blueprint('api', __name__, url_prefix='/api')
+  app.register_blueprint(api_bp)
+  ```
+
+* `app.config.from_object(obj)`: Load configuration from a Python object (class or module). Useful for environment-specific configs.
+
+  ```python
+  class Config:
+      DEBUG = False
+      SECRET_KEY = 'your-secret-key'
+  
+  app.config.from_object(Config)
+  ```
+
+* `app.config.from_envvar(variable_name)`: Load configuration from a file specified by an environment variable.
+
+  ```python
+  # Set environment variable: export MYAPP_SETTINGS='/path/to/config.py'
+  app.config.from_envvar('MYAPP_SETTINGS')
+  ```
+
+* `make_response(response_value, status_code)`: Create a response object from a return value. Useful for adding custom headers or modifying the response.
+
+  ```python
+  @app.route('/custom')
+  def custom():
+      response = make_response('Custom content')
+      response.headers['X-Custom-Header'] = 'Value'
+      return response
+  ```
+
+* `test_client()`: Create a test client for unit testing your application without running a server.
+
+  ```python
+  def test_home():
+      with app.test_client() as client:
+          response = client.get('/')
+          assert response.status_code == 200
+  ```
 
 ### The `request` Object
 
@@ -165,7 +268,7 @@ def index():
     return "Home page"
 ```
 
-#### Dynamic Routes 
+#### Dynamic Routes
 
 A dynamic route is an implicitly defined route that can be generated from input data. The imputed route is denoted by a variable within `<` and `>`. For example:
 
@@ -176,7 +279,30 @@ def author(authors_last_name): #passed from the url above
                         author_ln=authors_last_name)
 ```
 
-This will fill in references to `{{ author_ln }}` Jinja variable in the `.html` template file with the author's last name. **Data Types**: Dynamic route values' **data types** may be specified preceding the value name. E.g., `@app.route('/people/<int:age>')`.
+This will fill in references to `{{ author_ln }}` Jinja variable in the `.html` template file with the author's last name. 
+
+**Variable Rules (also called URL parameters):** The `<variable_name>` syntax in the route captures that part of the URL and passes it as an argument to your function. Use **f-strings** to embed variables in strings:
+
+```python
+@app.route('/user/<username>')
+def show_user_profile(username):
+    return f'User {username}'
+    
+@app.route('/post/<int:post_id>')
+def show_post(post_id):
+    return f'Post {post_id}'
+```
+
+**Data Types**: Dynamic route values' **data types** may be specified preceding the value name:
+
+```python
+@app.route('/people/<int:age>')        # age converted to integer
+@app.route('/files/<path:filepath>')    # filepath can include slashes
+@app.route('/posts/<uuid:post_id>')     # post_id must be valid UUID
+@app.route('/price/<float:amount>')     # amount converted to float
+```
+
+Available converters: `string` (default), `int`, `float`, `path`, `uuid`.
 
 ### Before-Request Decorator
 
@@ -191,6 +317,7 @@ def before_request():
 ```
 
 **Key points:**
+
 - Executes once per request, not just once at startup
 - The `g` object is request-specific - it's created fresh for each request and destroyed when the request ends
 - Allows helper functions to access `g.db` without passing it as a parameter
@@ -210,6 +337,7 @@ def after_request(response):
 ```
 
 **Common uses:**
+
 - Adding custom headers to all responses
 - Logging response information
 - Modifying response data
@@ -1489,7 +1617,7 @@ http://<EC2-IPv4-Address>:5000
 
 Open a web browser and navigate to `http://<your-ec2-ip-address>:5000`. You should see your Flask app running!
 
-#### Production Best Practices
+#### Part 3: Production Best Practices
 
 While the above deployment works for learning and small projects, production applications should consider:
 
@@ -1542,7 +1670,7 @@ For ongoing development:
 - Use blue-green deployment strategies
 - Implement proper testing before deployment
 
-#### Troubleshooting Common Issues
+#### Part 4: Troubleshooting Common Issues
 
 **App Not Accessible:**
 - Verify security group has correct port open
@@ -1569,7 +1697,7 @@ chmod 400 ~/.ssh/my-key-pair.pem
 - Review application logs
 - Verify all dependencies are installed
 
-#### Alternative Hosting Options
+#### Part 5: Alternative Hosting Options
 
 Beyond AWS EC2, consider these platforms:
 
