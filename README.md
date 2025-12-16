@@ -1339,7 +1339,7 @@ Security groups control inbound/outbound traffic to your instance:
    
    **For Flask App:**
    - **Type**: Custom TCP Rule
-   - **Port**: Your Flask app port (e.g., `8105` or `5000`)
+   - **Port**: `5000` (Flask's default port, or choose another like `8080`, `8105`, etc.)
    - **Source**: 
      - `0.0.0.0/0` (allows access from anywhere) - **for public web apps**
      - Specific IP/CIDR (e.g., `203.0.113.0/24`) - **for internal/restricted apps**
@@ -1352,7 +1352,7 @@ Security groups control inbound/outbound traffic to your instance:
   - Use a bastion host or VPN for centralized access control
   - If using `0.0.0.0/0` for SSH, use strong authentication (key-based only, no passwords, consider fail2ban)
 
-- **Public Web Apps**: Must use `0.0.0.0/0` on your app port (8105, 5000, etc.) so anyone can access your website
+- **Public Web Apps**: Must use `0.0.0.0/0` on your app port (5000 or whichever you chose) so anyone can access your website
 
 - **AWS Warning**: "Rules with source of 0.0.0.0/0 allow all IP addresses to access your instance. We recommend setting security group rules to allow access from known IP addresses only."
 
@@ -1420,9 +1420,21 @@ cd your-web-app
 - ❌ SSH (won't work without setup): `git@github.com:username/repo.git`
 - ✅ HTTPS (works immediately): `https://github.com/username/repo.git`
 
-For private repositories, you may be prompted for your GitHub username and password (or personal access token).
+For private repositories, you may be 
+prompted for your GitHub username and password (or personal access token).
 
-3. **Install dependencies** (if you have a `requirements.txt`):
+3. **Create and activate a virtual environment**:
+```bash
+# Create virtual environment
+python3 -m venv venv
+
+# Activate virtual environment
+source venv/bin/activate
+```
+
+Your command prompt will change to show `(venv)` at the beginning, indicating the virtual environment is active.
+
+4. **Install dependencies** (if you have a `requirements.txt`):
 ```bash
 pip install -r requirements.txt
 ```
@@ -1434,13 +1446,13 @@ Modify your `app.py` to use the correct port and enable threading:
 ```python
 if __name__ == '__main__':
     app.run(host='0.0.0.0',  # Listen on all network interfaces
-            port=8105,        # Match your security group port
+            port=5000,        # Default Flask port; match your security group port
             threaded=True)    # Enable threading for concurrent requests
 ```
 
 **Important Configuration Notes:**
 - `host='0.0.0.0'`: Allows external connections (not just localhost)
-- `port`: Must match the port opened in your security group
+- `port=5000`: Flask's default port. Must match the port opened in your security group. You can use any port (e.g., 8080, 8105), just ensure consistency.
 - `threaded=True`: Enables handling multiple requests simultaneously
 - **Never use `debug=True` in production** (security risk)
 
@@ -1463,8 +1475,10 @@ python app.py
 
 4. **Your app is now live!** Access it at:
 ```
-http://<EC2-IPv4-Address>:8105
+http://<EC2-IPv4-Address>:5000
 ```
+
+(Replace `5000` with whatever port you configured in your security group and `app.py`)
 
 **Useful tmux Commands:**
 - Reattach to session: `tmux attach -t flask-app`
@@ -1473,7 +1487,7 @@ http://<EC2-IPv4-Address>:8105
 
 **9. Verify Deployment**
 
-Open a web browser and navigate to `http://<your-ec2-ip-address>:8105`. You should see your Flask app running!
+Open a web browser and navigate to `http://<your-ec2-ip-address>:5000`. You should see your Flask app running!
 
 #### Production Best Practices
 
@@ -1482,7 +1496,7 @@ While the above deployment works for learning and small projects, production app
 **1. Use a Production WSGI Server**
 
 Replace Flask's built-in server with:
-- **Gunicorn**: `gunicorn -w 4 -b 0.0.0.0:8105 app:app`
+- **Gunicorn**: `gunicorn -w 4 -b 0.0.0.0:5000 app:app`
 - **uWSGI**: More configuration required but very robust
 
 **2. Process Management**
@@ -1539,7 +1553,7 @@ For ongoing development:
 **Port Already in Use:**
 ```bash
 # Find process using the port
-sudo lsof -i :8105
+sudo lsof -i :5000
 # Kill the process
 sudo kill -9 <PID>
 ```
