@@ -724,6 +724,7 @@ def hello_world():
 ## References
 
 * [Bootstrap Frontend Toolkit Docs](https://getbootstrap.com/docs/5.3/getting-started/introduction/)
+* [CSS Tutorial - TutorialsPoint](https://www.tutorialspoint.com/css/index.htm)
 * [HTML Examples - Tutorial Republic](https://www.tutorialrepublic.com/html-examples.php)
 * [HTTP Status Codes](http://restapitutorial.com/httpstatuscodes)
 * [Jinja2 - Full Stack Python](https://www.fullstackpython.com/jinja2.html)
@@ -1148,6 +1149,52 @@ HTML elements can have attributes that provide additional information:
 **CSS (Cascading Style Sheets):**
 
 CSS defines how HTML elements are displayed - colors, fonts, layouts, spacing, and responsive design.
+
+**What Does "Cascading" Mean?**
+
+The "Cascading" in CSS refers to the order of priority when multiple styles apply to the same element. CSS follows a cascading order to determine which styles take precedence:
+
+1. **Inline styles** (highest priority) - `<p style="color: red;">`
+2. **Internal/External stylesheets** - Based on specificity and source order
+3. **Browser defaults** (lowest priority)
+
+**Specificity Hierarchy** (most to least specific):
+- Inline styles: `style="..."` - **Specificity: 1000**
+- IDs: `#header` - **Specificity: 100**
+- Classes, attributes, pseudo-classes: `.nav`, `[type="text"]`, `:hover` - **Specificity: 10**
+- Elements and pseudo-elements: `div`, `p`, `::before` - **Specificity: 1**
+
+**Example of Cascading:**
+```css
+/* Least specific - specificity: 1 */
+p {
+    color: black;
+}
+
+/* More specific - specificity: 10 */
+.highlight {
+    color: blue;
+}
+
+/* Most specific - specificity: 100 */
+#main-text {
+    color: green;
+}
+```
+
+```html
+<!-- This paragraph will be GREEN because ID has highest specificity -->
+<p id="main-text" class="highlight">Text here</p>
+
+<!-- This would be RED despite the class, because inline has highest priority -->
+<p class="highlight" style="color: red;">Text here</p>
+```
+
+**When specificity is equal, the last rule wins:**
+```css
+p { color: blue; }
+p { color: red; }  /* This wins - appears last */
+```
 
 **Three Ways to Include CSS:**
 
