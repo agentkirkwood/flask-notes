@@ -1374,16 +1374,27 @@ mv ~/Downloads/my-key-pair.pem ~/.ssh/
 chmod 400 ~/.ssh/my-key-pair.pem  # Restrict permissions
 ```
 
-3. Create an SSH config file (`~/.ssh/config`) for easy access:
+3. Get your instance's **IPv4 Public Address**:
+   - In AWS Console, go to EC2 > Instances
+   - Click on your instance
+   - Look in the bottom panel under "Instance summary"
+   - Find "Public IPv4 address" (e.g., `54.123.45.67`)
+
+4. Create an SSH config file (`~/.ssh/config`) for easy access:
 
 ```
-Host my-flask-app
-    HostName <EC2-IPv4-Public-Address>
-    User ubuntu
-    IdentityFile ~/.ssh/my-key-pair.pem
+Host my-flask-app                           # Nickname (choose any name you want)
+    HostName 54.123.45.67                   # Your EC2 Public IPv4 address from step 3
+    User ubuntu                              # Default username for your AMI (see below)
+    IdentityFile ~/.ssh/my-key-pair.pem     # Path to your downloaded .pem file
 ```
 
-4. Get your instance's IPv4 address from the EC2 dashboard (bottom right of instance details)
+**Finding the correct User for your AMI:**
+- When you selected your AMI, the username is typically shown in the AMI description or usage instructions
+- In AWS Console: Go to EC2 > Instances > Select your instance > Click "Connect" button at top
+- AWS will show the correct SSH command with the proper username, e.g., `ssh -i "keypair.pem" ubuntu@54.123.45.67`
+- The username is the part between the `@` symbol and before the IP address
+- Most Python/Data Science Community AMIs use `ubuntu`
 
 5. SSH into your instance:
 
@@ -1404,6 +1415,12 @@ sudo apt-get upgrade
 git clone https://github.com/your-username/your-web-app.git
 cd your-web-app
 ```
+
+**Note:** Use HTTPS URL (starts with `https://`), not SSH URL (starts with `git@github.com:`). If you copied the SSH URL and get a "Permission denied (publickey)" error, replace it with the HTTPS version:
+- ❌ SSH (won't work without setup): `git@github.com:username/repo.git`
+- ✅ HTTPS (works immediately): `https://github.com/username/repo.git`
+
+For private repositories, you may be prompted for your GitHub username and password (or personal access token).
 
 3. **Install dependencies** (if you have a `requirements.txt`):
 ```bash
