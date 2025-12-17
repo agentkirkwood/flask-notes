@@ -61,7 +61,7 @@
                         <label>Adj Count File :</label>
                             <select name="file_1" width="300px">
                             {% for x in count_file %}
-                            <option value="{{ x }}" SELECTED>{{ x }}</option>
+                            <option value="{{ x }}" {% if x == 'counts.csv' %}SELECTED{% endif %}>{{ x }}</option>
                             {% endfor %}
                             </select>
                      </div>
@@ -71,7 +71,7 @@
                         <label>P-Value File :</label>
                             <select name="file_2" width="300px">
                             {% for x in count_file %}
-                            <option value="{{ x }}" SELECTED>{{ x }}</option>
+                            <option value="{{ x }}" {% if x == 'p_vals.csv' %}SELECTED{% endif %}>{{ x }}</option>
                             {% endfor %}
                             </select>
                     </div>

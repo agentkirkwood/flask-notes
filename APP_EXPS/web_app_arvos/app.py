@@ -3,7 +3,6 @@ import pandas as pd
 #interactive image modules
 from bokeh.embed import components
 from bokeh.resources import INLINE
-from bokeh.util.string import encode_utf8
 #dendogram modules
 from scipy.cluster.hierarchy import linkage, dendrogram
 from scipy.spatial.distance import pdist
@@ -93,7 +92,7 @@ def make_heatmap_object(df, sample_lst, gene_lst, df_p):
     # p is a bokeh figure object 
     p = figure(title="Gene Expression",
                x_range=sample_lst, y_range=gene_lst,
-               x_axis_location="above", plot_width=600, plot_height=900,
+               x_axis_location="above", width=600, height=900,
                tools=TOOLS, toolbar_location='below')
     
     p.grid.grid_line_color = None
@@ -163,7 +162,7 @@ def visualize():
         img_list = img_arr,
         img_path = image_path
         )
-    return encode_utf8(html)    
+    return html    
 
 # maybe make a landing page with redirect to data enter page.  
 
@@ -180,14 +179,15 @@ def about():
 @app.route('/contact')
 def contact():
     return render_template('contact.html')  
-    
+
+# Configuration variables
+avail_figure = ['Volcano', 'Heatmap']
+data_path = 'data'
+data_type = '.csv'
+image_path = 'static/fig'
+max_num = 200
+p_possible = [.05, .04, .03, .02, .01]
+
 if __name__ == '__main__':
-    #configs
-    avail_figure = [ 'Volcano','Heatmap']
-    data_path ='data'
-    data_type = '.csv'
-    image_path = 'static/fig'
-    max_num = 200
-    p_possible = [.05, .04, .03, .02, .01]          
     # threading.Timer(1.25, lambda: webbrowser.open(url) ).start()
-    app.run('0.0.0.0', port=8000)
+    app.run('0.0.0.0', port=8000, debug=True)
