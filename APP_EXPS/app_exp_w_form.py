@@ -23,9 +23,9 @@ def submission_page():
 def word_counter():
     text = str(request.form['user_input'])
     word_counts = Counter(text.lower().split())
-    page = 'There are {0} words.<br><br>Individual word counts:<br> {1}'
-    return page.format(len(word_counts), dict_to_html(word_counts))
-
+    total_word_count = sum(word_counts.values())
+    page = 'There are {0} <em>unique</em> words and {1} words total.<br><br>Individual word counts:<br> {2}<br><br><a href="/"><button>Return</button></a>'
+    return page.format(len(word_counts), total_word_count, dict_to_html(word_counts))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
