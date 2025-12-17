@@ -3,14 +3,13 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return 'Hello!'
-
+    return 'd<a href="/rainbow"><button>Rainbow?</button></a>'
 
 @app.route('/rainbow')
 def rainbow():
     colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple']
     color_divs = []
-    for i in xrange(1000):
+    for i in range(1000):
         color = colors[i % len(colors)]
         div = '''<div style="background-color: {0};
                              color: white;
