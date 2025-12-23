@@ -1,9 +1,21 @@
 from flask import Flask
 app = Flask(__name__)
+'''
+A simple Flask app that serves a rainbow-colored page connected to a home page. 
+The home page has a button that links to the rainbow page, and the rainbow page 
+has a button to go back home.
+'''
 
 @app.route('/')
 def index():
-    return 'd<a href="/rainbow"><button>Rainbow?</button></a>'
+    return '<a href="/rainbow"><button>Rainbow?</button></a>'
+
+# make html that gives us a button to go back to the home page
+go_to_home_html = '''
+    <form action="/" >
+        <input type="submit" value = "Go home"/> <!-- note "submit" type is a button -->
+    </form>
+'''
 
 @app.route('/rainbow')
 def rainbow():
@@ -26,7 +38,7 @@ def rainbow():
                 </head>
                 <body>{0}</body>
             </html>
-            '''.format('\n'.join(color_divs))
+            '''.format('\n'.join(color_divs)) + go_to_home_html
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
