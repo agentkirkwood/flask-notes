@@ -1841,12 +1841,18 @@ gunicorn==21.2.0
 
 **Important**: Always include `gunicorn` in `requirements.txt` - it's essential for production deployment.
 
-**`runtime.txt`** (optional but recommended):
+**`.python-version`** (optional but recommended):
 
-Specify your Python version:
+Specify your Python major version (note the dot at the start of the filename):
 ```
-python-3.11.7
+3.11
 ```
+
+**Important**: 
+- Use **only the major version** (e.g., `3.11`) not the full version (e.g., `3.11.7`)
+- This allows automatic security patch updates when you deploy
+- The file should have no extension and must start with a dot
+- Older `runtime.txt` is deprecated - use `.python-version` instead
 
 Check supported versions at [devcenter.heroku.com/articles/python-support](https://devcenter.heroku.com/articles/python-support)
 
