@@ -1852,7 +1852,7 @@ Specify your Python major version (note the dot at the start of the filename):
 - Use **only the major version** (e.g., `3.11`) not the full version (e.g., `3.11.7`)
 - This allows automatic security patch updates when you deploy
 - The file should have no extension and must start with a dot
-- Older `runtime.txt` is deprecated - use `.python-version` instead
+- Use `.python-version` to specify the Python version
 
 Check supported versions at [devcenter.heroku.com/articles/python-support](https://devcenter.heroku.com/articles/python-support)
 
@@ -1950,7 +1950,7 @@ git push heroku feature-branch:main  # Deploys feature-branch as main on Heroku
 
 1. Heroku receives your code
 2. Detects it's a Python app (from `requirements.txt`)
-3. Installs Python version from `runtime.txt` (or uses default)
+3. Installs Python version from `.python-version` (or uses default)
 4. Creates a virtual environment
 5. Installs all packages from `requirements.txt`
 6. Runs the command from `Procfile`
