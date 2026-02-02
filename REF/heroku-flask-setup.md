@@ -241,10 +241,10 @@ Heroku offers PostgreSQL as an add-on:
 
 **Add Heroku Postgres:**
 ```bash
-heroku addons:create heroku-postgresql:mini
+heroku addons:create heroku-postgresql:essential-0
 ```
 
-**Note**: The free "hobby-dev" tier was discontinued in November 2022. The "mini" plan is the cheapest paid option (~$5/month).
+**Note**: The free "hobby-dev" tier was discontinued in November 2022. The "essential-0" plan is the cheapest paid option (~$5/month).
 
 Heroku automatically sets the `DATABASE_URL` environment variable. Access it in your Flask app:
 
