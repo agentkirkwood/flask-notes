@@ -4,7 +4,6 @@ Heroku is a cloud Platform-as-a-Service (PaaS) that makes deploying Flask applic
 
 ## Contents
 
-* [PaaS Alternatives](#paas-alternatives)
 * [Why Choose Heroku?](#why-choose-heroku)
 * [Prerequisites](#prerequisites)
 * [Deploying to Heroku](#deploying-to-heroku)
@@ -15,17 +14,6 @@ Heroku is a cloud Platform-as-a-Service (PaaS) that makes deploying Flask applic
 * [Alternative Hosting Options](#alternative-hosting-options)
 * [Heroku vs AWS EC2 Comparison](#heroku-vs-aws-ec2-raw-vm-comparison)
 * [Resources](#resources)
-
-## PaaS Alternatives
-
-Heroku is one option in the PaaS category. Common alternatives include:
-
-- **Render**
-- **Railway**
-- **Fly.io**
-- **DigitalOcean App Platform**
-- **Google App Engine**
-- **Azure App Service**
 
 ## Why Choose Heroku?
 
@@ -340,9 +328,15 @@ Now every push to your GitHub repository automatically deploys to Heroku.
 Beyond Heroku, consider these platforms:
 
 **Platform-as-a-Service (PaaS):**
+
+Heroku is one option in the PaaS category. Common alternatives include:
+- **Render**
+- **Railway**
+- **Fly.io**
+- **DigitalOcean App Platform**
+- **Google App Engine**
+- **Azure App Service**
 - **PythonAnywhere**: Python-specific hosting, simple deployment
-- **Google Cloud Platform (App Engine)**: Auto-scaling, pay-per-use
-- **Microsoft Azure (App Service)**: Enterprise-grade hosting
 
 **Containerization:**
 - **Docker + AWS ECS**: Package app with all dependencies
