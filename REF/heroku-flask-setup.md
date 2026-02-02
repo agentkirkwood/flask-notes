@@ -4,18 +4,25 @@ Heroku is a cloud Platform-as-a-Service (PaaS) that makes deploying Flask applic
 
 ## Contents
 
-* [Why Choose Heroku?](#why-choose-heroku)
-* [Prerequisites](#prerequisites)
-* [Deploying to Heroku](#deploying-to-heroku)
-* [Managing Your Heroku App](#managing-your-heroku-app)
-* [Working with Databases on Heroku](#working-with-databases-on-heroku)
-* [Continuous Deployment](#continuous-deployment)
-* [Common Heroku Issues and Solutions](#common-heroku-issues-and-solutions)
-* [Alternative Hosting Options](#alternative-hosting-options)
-* [Heroku vs AWS EC2 Comparison](#heroku-vs-aws-ec2-raw-vm-comparison)
+* [About Heroku](#about-heroku)
+  * [Why Choose Heroku?](#why-choose-heroku)
+  * [Understanding Heroku Dynos](#understanding-heroku-dynos)
+  * [Prerequisites](#prerequisites)
+* [Deploying Flask Apps](#deploying-flask-apps)
+  * [Prepare Your Flask Application](#prepare-your-flask-application)
+  * [Deploy to Heroku](#deploy-to-heroku)
+  * [Managing Your App](#managing-your-app)
+  * [Working with Databases](#working-with-databases)
+  * [Continuous Deployment](#continuous-deployment)
+* [Troubleshooting](#troubleshooting)
+* [Alternative Hosting](#alternative-hosting)
+  * [Other PaaS Options](#other-paas-options)
+  * [Heroku vs AWS EC2 Comparison](#heroku-vs-aws-ec2-comparison)
 * [Resources](#resources)
 
-## Why Choose Heroku?
+## About Heroku
+
+### Why Choose Heroku?
 
 **Advantages:**
 - **Extremely beginner-friendly**: Deploy with a few Git commands
@@ -32,16 +39,44 @@ Heroku is a cloud Platform-as-a-Service (PaaS) that makes deploying Flask applic
 - **Cold starts**: Free tier apps "sleep" after 30 minutes of inactivity (slight delay on first request)
 - **Ephemeral filesystem**: Files written to disk are lost on restart (use external storage for uploads)
 
-## Prerequisites
+### Understanding Heroku Dynos
+
+A **dyno** is Heroku's term for a lightweight, isolated container that runs your application code. Think of it as a virtual machine dedicated to running a single process defined in your `Procfile`.
+
+**Key characteristics:**
+- **Isolated**: Each dyno runs in its own isolated environment
+- **Stateless**: Files written to the filesystem don't persist across restarts
+- **Scalable**: You can run multiple dynos to handle more traffic
+- **Process-based**: Each dyno runs one process type (web, worker, etc.)
+
+**Common dyno types:**
+- **Web dynos**: Run your web application and receive HTTP traffic
+- **Worker dynos**: Run background jobs (e.g., processing queues, sending emails)
+
+**Example commands:**
+```bash
+heroku ps:scale web=1          # Run 1 web dyno
+heroku ps:scale web=2          # Scale to 2 web dynos (more capacity)
+heroku ps:scale web=0          # Stop all web dynos
+```
+
+**Free tier limitations:**
+- Free dynos sleep after 30 minutes of inactivity
+- First request after sleep has a ~10 second delay ("cold start")
+- 550-1000 free dyno hours per month
+
+For production apps, use paid dyno types (Eco, Basic, Standard) which never sleep.
+
+### Prerequisites
 
 1. **Heroku account**: Sign up at [heroku.com](https://www.heroku.com/)
 2. **Heroku CLI installed**: Download from [devcenter.heroku.com/articles/heroku-cli](https://devcenter.heroku.com/articles/heroku-cli)
 3. **Git installed**: Heroku deploys via Git
 4. **Flask app in a Git repository**: Your code should be version-controlled
 
-## Deploying to Heroku
+## Deploying Flask Apps
 
-### 1. Prepare Your Flask Application
+### Prepare Your Flask Application
 
 Create these required files in your project root:
 
@@ -90,7 +125,7 @@ Specify your Python major version (note the dot at the start of the filename):
 
 Check supported versions at [devcenter.heroku.com/articles/python-support](https://devcenter.heroku.com/articles/python-support)
 
-### 2. Modify Your Application Code
+**Modify Your Application Code:**
 
 Heroku assigns a random port via the `PORT` environment variable. Your app must listen on this port:
 
@@ -116,7 +151,7 @@ if __name__ == '__main__':
 - Keep `host='0.0.0.0'` to accept external connections
 - Don't use `debug=True` in production
 
-### 3. Initialize Git Repository (if not already done)
+**Initialize Git Repository (if not already done):**
 
 ```bash
 git init
@@ -134,13 +169,15 @@ __pycache__/
 .DS_Store
 ```
 
-### 4. Install and Login to Heroku CLI
+### Deploy to Heroku
+
+**Install and Login to Heroku CLI:**
 
 ```bash
 heroku login
 ```
 
-### 5. Create a Heroku App
+**Create a Heroku App:**
 
 ```bash
 heroku create your-app-name
@@ -156,7 +193,7 @@ To rename later:
 heroku apps:rename new-name --app old-name
 ```
 
-### 6. Deploy Your Application
+**Deploy Your Application:**
 
 ```bash
 git push heroku main
@@ -180,19 +217,19 @@ git push heroku feature-branch:main  # Deploys feature-branch as main on Heroku
 5. Installs all packages from `requirements.txt`
 6. Runs the command from `Procfile`
 
-### 7. Ensure at Least One Instance is Running
+**Ensure at Least One Instance is Running:**
 
 ```bash
 heroku ps:scale web=1
 ```
 
-### 8. Open Your App
+**Open Your App:**
 
 ```bash
 heroku open
 ```
 
-### 9. View Logs (for debugging)
+**View Logs (for debugging):**
 
 ```bash
 heroku logs --tail
@@ -203,7 +240,7 @@ heroku logs --tail
 - `--source app`: Show only application logs
 - `-n 200`: Show last 200 lines
 
-## Managing Your Heroku App
+### Managing Your App
 
 **View app info:**
 ```bash
@@ -237,7 +274,7 @@ heroku config
 heroku apps:destroy --app your-app-name
 ```
 
-## Working with Databases on Heroku
+### Working with Databases
 
 Heroku offers PostgreSQL as an add-on:
 
@@ -275,7 +312,7 @@ db = SQLAlchemy(app)
 heroku pg:psql  # Opens PostgreSQL command line
 ```
 
-## Continuous Deployment
+### Continuous Deployment
 
 For automatic deployment when you push to GitHub:
 
@@ -289,7 +326,7 @@ For automatic deployment when you push to GitHub:
 
 Now every push to your GitHub repository automatically deploys to Heroku.
 
-## Common Heroku Issues and Solutions
+## Troubleshooting
 
 **Issue: Application Error (H10)**
 - **Cause**: App crashed or not binding to correct port
@@ -323,7 +360,9 @@ Now every push to your GitHub repository automatically deploys to Heroku.
   - Add the package: `pip freeze | grep package-name >> requirements.txt`
   - Commit and push changes
 
-## Alternative Hosting Options
+## Alternative Hosting
+
+### Other PaaS Options
 
 Beyond Heroku, consider these platforms:
 
@@ -350,7 +389,7 @@ Heroku is one option in the PaaS category. Common alternatives include:
 - **Heroku**: Free tier with limitations (app sleeps after inactivity)
 - **PythonAnywhere**: Free tier for small apps
 
-## Heroku vs AWS EC2 (Raw VM) Comparison
+### Heroku vs AWS EC2 Comparison
 
 | Feature | Heroku | AWS EC2 |
 |---------|--------|---------|
